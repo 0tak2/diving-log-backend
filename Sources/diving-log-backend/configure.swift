@@ -18,9 +18,13 @@ public func configure(_ app: Application) async throws {
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
 
-    app.migrations.add(CreateTodo())
+    app.migrations.add(CreateMember())
+    app.migrations.add(CreateEmailVerification())
+    app.migrations.add(CreateMagazine())
+    app.migrations.add(CreateSeries())
+    app.migrations.add(CreateArticle())
 
-    app.views.use(.leaf)
+    app.views.use(.leaf) // for admin page
 
     // register routes
     try routes(app)
