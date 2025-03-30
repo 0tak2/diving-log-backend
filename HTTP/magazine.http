@@ -1,0 +1,16 @@
+GET http://localhost:8080/articles/5 HTTP/1.1
+
+###
+
+GET http://localhost:8080/articles/not-a-number HTTP/1.1
+
+###
+
+POST http://localhost:8080/magazines HTTP/1.1
+content-type: application/json
+
+{
+    "title": "sample",
+    "issueNumber": 1,
+    "publishDate": 1743324397,
+}
