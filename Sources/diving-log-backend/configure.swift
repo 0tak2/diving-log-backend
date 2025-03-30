@@ -26,6 +26,7 @@ public func configure(_ app: Application) async throws {
 
     app.views.use(.leaf) // for admin page
 
+    app.middleware.use(ErrorMiddleware())
     // register routes
     try routes(app)
 }
