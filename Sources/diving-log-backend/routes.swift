@@ -11,4 +11,8 @@ func routes(_ app: Application) throws {
         )
     )
 
+    try app.register(collection: MagazineController(
+            createMagazineUseCase: CreateMagazineUseCase(repository: MagazineRepository())
+        )
+    )
 }
