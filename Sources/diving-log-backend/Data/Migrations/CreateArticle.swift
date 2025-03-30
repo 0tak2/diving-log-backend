@@ -19,6 +19,7 @@ struct CreateArticle: AsyncMigration {
             .field("is_deleted", .bool, .required, .sql(.default(false)))
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
+            .unique(on: "order")
             .create()
     }
     

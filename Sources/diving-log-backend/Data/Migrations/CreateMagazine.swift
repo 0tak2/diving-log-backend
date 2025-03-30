@@ -13,6 +13,7 @@ struct CreateMagazine: AsyncMigration {
             .field("creator_id", .uuid, .required, .references("members", "id"))
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
+            .unique(on: "issue_number")
             .create()
     }
     
