@@ -27,6 +27,16 @@ public func configure(_ app: Application) async throws {
     app.views.use(.leaf) // for admin page
 
     app.middleware.use(ErrorMiddleware())
+
+    // MARK: encoder and decoder
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+    encoder.dateEncodingStrategy = .secondsSince1970
+    decoder.dateDecodingStrategy = .secondsSince1970
+
+    ContentConfiguration.global.use(encoder: encoder, for: .json)
+    ContentConfiguration.global.use(decoder: decoder, for: .json)
+
     // register routes
     try routes(app)
 }
