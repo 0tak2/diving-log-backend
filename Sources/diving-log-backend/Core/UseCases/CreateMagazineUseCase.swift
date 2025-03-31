@@ -1,6 +1,5 @@
 import Fluent
 import Foundation
-import PostgresKit
 
 final class CreateMagazineUseCase: BaseUseCase<CreateMagazineDTO, MagazineEntity>, @unchecked Sendable {
     private let repository: any MagazineRepositoryProtocol
@@ -16,13 +15,8 @@ final class CreateMagazineUseCase: BaseUseCase<CreateMagazineDTO, MagazineEntity
 
         do {
             return try await db.transaction { db in
-                do {
-                    let _ = try await self.repository.get(issueNumber: input.issueNumber, on: db)
+                if let _ = try await self.repository.get(issueNumber: input.issueNumber, on: db) {
                     throw DomainError.alreadyExistError("issueNumber \(input.issueNumber)인 magazine은 이미 있습니다")
-                } catch let error as DomainError {
-                    guard case .notFoundError = error else {
-                        throw error
-                    }
                 }
 
                 let entity = MagazineEntity(
@@ -46,7 +40,7 @@ final class CreateMagazineUseCase: BaseUseCase<CreateMagazineDTO, MagazineEntity
                 )
                 return try await self.repository.create(entity: entity, on: db)
             }
-        } catch let error as PSQLError {
+        } catch let error as RepositoryError {
             throw DomainError.databaseError(error.localizedDescription)
         }
     }
