@@ -15,4 +15,9 @@ func routes(_ app: Application) throws {
             createMagazineUseCase: CreateMagazineUseCase(repository: MagazineRepository())
         )
     )
+
+    try app.register(collection: SeriesController(
+        createSeriesUseCase: CreateSeriesUseCase(repository: SeriesRepository())
+        )
+    )
 }

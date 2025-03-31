@@ -6,6 +6,6 @@ struct SeriesEntity: Content {
     let title: String
     let description: String
     let creator: MemberEntity?
-    let createdAt: Date
-    let updatedAt: Date
+    let createdAt: Date?
+    let updatedAt: Date?
 }
