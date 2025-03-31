@@ -8,4 +8,15 @@ struct SeriesEntity: Content {
     let creator: MemberEntity?
     let createdAt: Date?
     let updatedAt: Date?
+
+    static func emptyOf(id: Int) -> SeriesEntity {
+        SeriesEntity(
+            id: id,
+            title: "",
+            description: "",
+            creator: nil,
+            createdAt: nil,
+            updatedAt: nil
+        )
+    }
 }

@@ -10,12 +10,12 @@ struct ArticleEntity: Content {
     let series: SeriesEntity?
     let content: String
     let contentType: ContentType
-    let contentUrl: String
+    let contentUrl: String?
     let isDeleted: Bool
     let accessibleLevel: Int
-    let createdAt: Date
-    let updatedAt: Date
-
+    let createdAt: Date?
+    let updatedAt: Date?
+    
     enum ContentType: String, Codable {
         case md = "MD"
         case html = "HTML"

@@ -34,6 +34,7 @@ struct ArticleMapper: Mapper {
             title: entity.title, 
             editorId: editorId, 
             magazineId: magazineId, 
+            order: entity.order,
             seriesId: seriesId, 
             content: entity.content, 
             contentType: Article.ContentType(rawValue: entity.contentType.rawValue) ?? .md, 

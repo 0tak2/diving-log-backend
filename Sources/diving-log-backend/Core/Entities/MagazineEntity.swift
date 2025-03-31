@@ -9,4 +9,16 @@ struct MagazineEntity: Content {
     let creator: MemberEntity?
     let createdAt: Date?
     let updatedAt: Date?
+
+    static func emptyOf(id: Int) -> MagazineEntity {
+        MagazineEntity(
+            id: id,
+            title: "",
+            issueNumber: 0,
+            publishDate: Date(),
+            creator: nil,
+            createdAt: nil,
+            updatedAt: nil
+        )
+    }
 }

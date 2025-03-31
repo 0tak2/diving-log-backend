@@ -29,7 +29,7 @@ final class Article: Model, @unchecked Sendable {
     var contentType: ContentType
 
     @Field(key: "content_url")
-    var contentUrl: String
+    var contentUrl: String?
     
     @Field(key: "accessible_member_level")
     var accessibleLevel: Int
@@ -45,10 +45,11 @@ final class Article: Model, @unchecked Sendable {
     
     init() {}
     
-    init(id: Int? = nil, title: String, editorId: UUID, magazineId: Int, seriesId: Int, content: String, contentType: ContentType, contentUrl: String, accessibleLevel: Int, isDeleted: Bool = false, createdAt: Date?, updatedAt: Date?) {
+    init(id: Int? = nil, title: String, editorId: UUID, magazineId: Int, order: Int, seriesId: Int, content: String, contentType: ContentType, contentUrl: String?, accessibleLevel: Int, isDeleted: Bool = false, createdAt: Date?, updatedAt: Date?) {
         self.id = id
         self.title = title
         self.$editor.id = editorId
+        self.order = order
         self.$magazine.id = magazineId
         self.$series.id = seriesId
         self.content = content

@@ -24,3 +24,18 @@ content-type: application/json
     "title": "sample series",
     "description": "test series",
 }
+
+###
+
+POST http://localhost:8080/articles HTTP/1.1
+content-type: application/json
+
+{
+    "title": "sample article",
+    "magazineId": 1,
+    "order": 100,
+    "seriesId": 1,
+    "content": "# Test\nTest Content",
+    "contentType": "MD",
+    "accessibleLevel": 1
+}

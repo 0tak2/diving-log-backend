@@ -13,7 +13,7 @@ struct CreateArticle: AsyncMigration {
             .field("order", .int, .required)
             .field("series_id", .int,  .required, .references("series", "id"))
             .field("content", .string, .required)
-            .field("content_url", .string, .required)
+            .field("content_url", .string)
             .field("content_type", .string, .required)
             .field("accessible_member_level", .int, .required)
             .field("is_deleted", .bool, .required, .sql(.default(false)))
