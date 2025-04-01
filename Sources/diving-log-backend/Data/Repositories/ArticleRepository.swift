@@ -17,6 +17,20 @@ final class ArticleRepository: ArticleRepositoryProtocol {
         return entity
     }
 
+    func getAll(issueNumber: Int, on db: any Database) async throws -> [ArticleEntity] {
+        let models = try await Article.query(on: db)
+        .join(Magazine.self, on: \Article.$magazine.$id == \Magazine.$id)
+        .filter(Magazine.self, \.$issueNumber == issueNumber)
+        .with(\.$editor)
+        .with(\.$magazine)
+        .with(\.$series)
+        .all()
+
+        let entities = models.compactMap { ArticleMapper.toEntity(model: $0) }
+
+        return entities
+    }
+
     func create(entity: ArticleEntity, on db: any FluentKit.Database) async throws -> ArticleEntity {
         guard let model = ArticleMapper.toModel(entity: entity) else {
             throw RepositoryError.mappingError
