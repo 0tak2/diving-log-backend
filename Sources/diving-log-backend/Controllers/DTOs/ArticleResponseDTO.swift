@@ -11,7 +11,6 @@ struct ArticleResponseDTO: Content {
     let seriesId: Int?
     let content: String?
     let contentType: ArticleEntity.ContentType
-    let contentUrl: String?
     let isDeleted: Bool
     let accessibleLevel: Int
     let createdAt: Date?
@@ -37,7 +36,6 @@ struct ArticleResponseDTO: Content {
             seriesId: series.id,
             content: includeContent ? entity.content : nil,
             contentType: entity.contentType,
-            contentUrl: entity.contentUrl,
             isDeleted: entity.isDeleted,
             accessibleLevel: entity.accessibleLevel,
             createdAt: entity.createdAt,
