@@ -2,6 +2,14 @@ GET http://localhost:8080/articles/5 HTTP/1.1
 
 ###
 
+GET http://localhost:8080/magazines/1
+
+###
+
+GET http://localhost:8080/articles?issueNumber=1
+
+###
+
 GET http://localhost:8080/articles/not-a-number HTTP/1.1
 
 ###
