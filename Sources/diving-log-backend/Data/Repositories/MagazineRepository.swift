@@ -18,6 +18,7 @@ final class MagazineRepository: MagazineRepositoryProtocol {
     func get(issueNumber: Int, on db: any FluentKit.Database) async throws -> MagazineEntity? {
         let model = try await Magazine.query(on: db)
             .filter(\.$issueNumber == issueNumber)
+            .with(\.$creator)
             .first()
 
         guard let model = model else {
