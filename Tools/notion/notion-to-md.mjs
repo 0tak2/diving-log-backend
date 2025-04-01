@@ -15,7 +15,7 @@ if (pageId === undefined) {
 }
 
 const notion = new Client({
-  auth: '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',
+  auth: apiKey,
 });
 
 async function convertPage() {
