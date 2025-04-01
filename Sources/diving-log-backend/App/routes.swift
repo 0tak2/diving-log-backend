@@ -12,11 +12,13 @@ func routes(_ app: Application) throws {
 
     try app.register(collection: ArticleController(
         getArticleUsecase: GetArticleUsecase(repository: articleRepository),
+        getAllArticlesInMagazineUseCase: GetAllArticlesInMagazineUseCase(repository: articleRepository),
         createMagazineUseCase: CreateArticleUseCase(repository: articleRepository)
     ))
 
     try app.register(collection: MagazineController(
-        createMagazineUseCase: CreateMagazineUseCase(repository: magazineRepository)
+        createMagazineUseCase: CreateMagazineUseCase(repository: magazineRepository),
+        getMagazineUseCase: GetMagazineUseCase(repository: magazineRepository)
     ))
 
     try app.register(collection: SeriesController(
