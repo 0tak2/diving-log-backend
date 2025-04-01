@@ -13,8 +13,8 @@ struct MemberMapper: Mapper {
             memberLevel: model.memberLevel,
             createdAt: model.createdAt ?? Date(),
             updatedAt: model.updatedAt ?? Date(),
-            hasEmailVerified: model.emailVerification != nil,
-            email: model.emailVerification?.email
+            hasEmailVerified: model.$emailVerification.value != nil,
+            email: model.$emailVerification.value != nil ? model.emailVerification?.email : nil
         )
     }
     
