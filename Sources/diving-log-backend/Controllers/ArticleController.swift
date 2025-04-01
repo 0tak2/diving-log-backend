@@ -17,14 +17,18 @@ struct ArticleController: RouteCollection {
         }
     }
 
-    func get(req: Request) async throws -> BasicResponse<ArticleEntity> {
+    func get(req: Request) async throws -> BasicResponse<ArticleResponseDTO> {
         guard let idParameter = req.parameters.get("id"),
               let id = Int(idParameter) else {
                 throw ControllerError.validationError("id가 필요합니다")
         }
 
-        let article = try await getArticleUsecase.execute(id, on: req.db)
-        return BasicResponse.okay(data: article)
+        let articleEntity = try await getArticleUsecase.execute(id, on: req.db)
+        let responseDTO = ArticleResponseDTO.from(entity: articleEntity, includeContent: true)
+        if responseDTO == nil {
+            throw ControllerError.convertDTOFailedError("magazine DTO 변환에 실패했습니다")
+        }
+        return BasicResponse.okay(data: responseDTO)
     }
 
     func create(req: Request) async throws -> BasicResponse<ArticleEntity> {

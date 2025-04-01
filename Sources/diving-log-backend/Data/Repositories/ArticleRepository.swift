@@ -4,6 +4,9 @@ final class ArticleRepository: ArticleRepositoryProtocol {
     func get(id: Int, on db: any Database) async throws -> ArticleEntity? {
         let model = try await Article.query(on: db)
         .filter(\.$id == id)
+        .with(\.$editor)
+        .with(\.$magazine)
+        .with(\.$series)
         .first()
 
         guard let model = model else {
