@@ -28,6 +28,9 @@ public func configure(_ app: Application) async throws {
 
     app.middleware.use(ErrorMiddleware())
 
+    // MARK: Log
+    app.logger.logLevel = .debug
+
     // MARK: encoder and decoder
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
