@@ -24,4 +24,6 @@ func routes(_ app: Application) throws {
     try app.register(collection: SeriesController(
         createSeriesUseCase: CreateSeriesUseCase(repository: seriesRepository)
     ))
+
+    try app.register(collection: AuthController())
 }

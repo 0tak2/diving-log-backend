@@ -28,6 +28,11 @@ public func configure(_ app: Application) async throws {
 
     app.middleware.use(ErrorMiddleware())
 
+    app.sessions.configuration.cookieFactory = { sessionID in
+        .init(string: sessionID.string, isSecure: true, isHTTPOnly: true, sameSite: HTTPCookies.SameSitePolicy.none)
+    }
+    app.middleware.use(app.sessions.middleware) // for OAuth
+
     // MARK: Log
     app.logger.logLevel = .debug
 
