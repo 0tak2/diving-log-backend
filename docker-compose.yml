@@ -71,3 +71,11 @@ services:
       POSTGRES_DB: vapor_database
     ports:
       - '5432:5432'
+  nginx:
+    image: nginx:latest
+    ports:
+      - "4443:4443"
+    volumes:
+      - ./Nginx/nginx-dev.conf:/etc/nginx/nginx.conf:ro
+      - ./Nginx/cert.pem:/etc/nginx/cert.pem:ro
+      - ./Nginx/key.pem:/etc/nginx/key.pem:ro

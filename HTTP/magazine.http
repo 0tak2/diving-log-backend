@@ -1,20 +1,23 @@
-GET http://localhost:8080/articles/5 HTTP/1.1
+@baseUrl = https://localhost:4443
+# @baseUrl = http://localhost:8080
+
+GET {{baseUrl}}/articles/5 HTTP/1.1
 
 ###
 
-GET http://localhost:8080/magazines/1
+GET {{baseUrl}}/magazines/1
 
 ###
 
-GET http://localhost:8080/articles?issueNumber=1
+GET {{baseUrl}}/articles?issueNumber=1
 
 ###
 
-GET http://localhost:8080/articles/not-a-number HTTP/1.1
+GET {{baseUrl}}/articles/not-a-number HTTP/1.1
 
 ###
 
-POST http://localhost:8080/magazines HTTP/1.1
+POST {{baseUrl}}/magazines HTTP/1.1
 content-type: application/json
 
 {
@@ -25,7 +28,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:8080/series HTTP/1.1
+POST {{baseUrl}}/series HTTP/1.1
 content-type: application/json
 
 {
@@ -35,7 +38,7 @@ content-type: application/json
 
 ###
 
-POST http://localhost:8080/articles HTTP/1.1
+POST {{baseUrl}}/articles HTTP/1.1
 content-type: application/json
 
 {
