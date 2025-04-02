@@ -1,4 +1,5 @@
-@baseUrl = https://localhost:4443
+@baseUrl = https://127.0.0.1.nip.io:4443
+# @baseUrl = https://localhost:4443
 # @baseUrl = http://localhost:8080
 
 GET {{baseUrl}}/articles/5 HTTP/1.1

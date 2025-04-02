@@ -4,7 +4,7 @@
 
 ```sh
 brew install mkcert
-mkcert -key-file key.pem -cert-file cert.pem localhost 127.0.0.1 192.168.0.1
+mkcert -key-file key.pem -cert-file cert.pem localhost 127.0.0.1 192.168.0.1 127.0.0.1.nip.io
 mkcert -install
 podman compose up nginx
 ```
