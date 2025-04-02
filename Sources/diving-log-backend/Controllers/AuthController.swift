@@ -37,19 +37,28 @@ struct AuthController: RouteCollection {
     }
 
     func appleLoginRedirect(req: Request) async throws -> HTTPStatus {
-        let response = try req.content.decode(AppleSignInRedirectDTO.self)
+        let received = try req.content.decode(AppleSignInRedirectDTO.self)
 
         if let state = req.session.data["state"],
-           state == response.state {
-            print(response)
+           state == received.state {
+            print(received)
+            print(received.userDTO)
             print("sign in success")
             // TODO: decode id_token
             // TODO: register
             // TODO: register
+
+            let idTokenPayloadRaw = received.id_token.split(separator: ".")[1]
+            let idTokenPayloadRawData = idTokenPayloadRaw.data(using: .utf8)!
+
+            if let data = Data(base64Encoded: idTokenPayloadRawData) {
+                print(String(data: data, encoding: .utf8))
+            }
+
             return .ok
         }
 
-        print("sign in failed... prevState=\(req.session.data["state"] ?? "nil") received=\(response.state)")
+        print("sign in failed... prevState=\(req.session.data["state"] ?? "nil") received=\(received.state)")
         return .badRequest
     }
 }
