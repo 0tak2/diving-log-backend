@@ -5,11 +5,13 @@ import Crypto
 struct AuthController: RouteCollection {
     private let redirectUrlNormal: String
     private let redirectUrlWhenFirstLogin: String
+    private let accessTokenExpiresInDays: Int
     private let signInUseCase: BaseUseCase<Request, SignInResult>
     
-    init(redirectUrlNormal: String, redirectUrlWhenFirstLogin: String, signInUseCase: BaseUseCase<Request, SignInResult>) {
+    init(redirectUrlNormal: String, redirectUrlWhenFirstLogin: String, accessTokenExpiresInDays: Int, signInUseCase: BaseUseCase<Request, SignInResult>) {
         self.redirectUrlNormal = redirectUrlNormal
         self.redirectUrlWhenFirstLogin = redirectUrlWhenFirstLogin
+        self.accessTokenExpiresInDays = accessTokenExpiresInDays
         self.signInUseCase = signInUseCase
     }
     
@@ -49,12 +51,23 @@ struct AuthController: RouteCollection {
     func appleLoginRedirect(req: Request) async throws -> Response {
         let signInResult = try await signInUseCase.execute(req, on: req.db)
         
-        // TODO: Issue JWT and set cookie
+        let jwtPayload = DivingLogJWTPayload(
+            subject: .init(value: signInResult.member.nickname),
+            expiration: .init(value: Date.now.adding(days: accessTokenExpiresInDays)),
+            level: signInResult.member.memberLevel
+        )
+        let jwt = try await req.jwt.sign(jwtPayload)
         
-        if signInResult.firstSignIn {
-            return Response(status: .found, headers: ["Location": redirectUrlNormal])
-        }
+        let redirectTo = signInResult.firstSignIn ? redirectUrlNormal : redirectUrlWhenFirstLogin
         
-        return Response(status: .found, headers: ["Location": redirectUrlWhenFirstLogin])
+        let response = Response(status: .found, headers: ["Location": redirectTo])
+        response.cookies["accessToken"] = HTTPCookies.Value(
+            string: jwt,
+            expires: Date.now.adding(days: accessTokenExpiresInDays),
+            isSecure: true,
+            isHTTPOnly: true,
+            sameSite: .lax
+        )
+        return response
     }
 }

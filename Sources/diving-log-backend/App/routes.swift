@@ -29,6 +29,7 @@ func routes(_ app: Application) throws {
     try app.register(collection: AuthController(
         redirectUrlNormal: Environment.get("LOGIN_REDIRECT_URL") ?? "/",
         redirectUrlWhenFirstLogin: Environment.get("LOGIN_REDIRECT_URL_FIRST_LOGIN") ?? "/",
+        accessTokenExpiresInDays: Int(Environment.get("ACCESS_TOKEN_EXPIRES_IN_DAYS") ?? "1") ?? 1,
         signInUseCase: SignInUseCase(repository: memberRepository)
     ))
 }

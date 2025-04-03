@@ -3,6 +3,7 @@ import Fluent
 import FluentPostgresDriver
 import Leaf
 import Vapor
+import JWT
 
 // configures your application
 public func configure(_ app: Application) async throws {
@@ -44,6 +45,10 @@ public func configure(_ app: Application) async throws {
 
     ContentConfiguration.global.use(encoder: encoder, for: .json)
     ContentConfiguration.global.use(decoder: decoder, for: .json)
+    
+    // MARK: JWT
+    let jwtSecret = Environment.get("ACCESS_TOKEN_SECRET") ?? "!@#DIVING_LOG_DEV_SECRET_1234!@#"
+    await app.jwt.keys.add(hmac: .init(stringLiteral: jwtSecret), digestAlgorithm: .sha256)
 
     // register routes
     try routes(app)
