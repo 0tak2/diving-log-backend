@@ -3,6 +3,16 @@ import Vapor
 import Crypto
 
 struct AuthController: RouteCollection {
+    private let redirectUrlNormal: String
+    private let redirectUrlWhenFirstLogin: String
+    private let signInUseCase: BaseUseCase<Request, SignInResult>
+    
+    init(redirectUrlNormal: String, redirectUrlWhenFirstLogin: String, signInUseCase: BaseUseCase<Request, SignInResult>) {
+        self.redirectUrlNormal = redirectUrlNormal
+        self.redirectUrlWhenFirstLogin = redirectUrlWhenFirstLogin
+        self.signInUseCase = signInUseCase
+    }
+    
     func boot(routes: any Vapor.RoutesBuilder) throws {
         let auth = routes.grouped("auth")
 
@@ -36,29 +46,15 @@ struct AuthController: RouteCollection {
         ])
     }
 
-    func appleLoginRedirect(req: Request) async throws -> HTTPStatus {
-        let received = try req.content.decode(AppleSignInRedirectDTO.self)
-
-        if let state = req.session.data["state"],
-           state == received.state {
-            print(received)
-            print(received.userDTO)
-            print("sign in success")
-            // TODO: decode id_token
-            // TODO: register
-            // TODO: register
-
-            let idTokenPayloadRaw = received.id_token.split(separator: ".")[1]
-            let idTokenPayloadRawData = idTokenPayloadRaw.data(using: .utf8)!
-
-            if let data = Data(base64Encoded: idTokenPayloadRawData) {
-                print(String(data: data, encoding: .utf8))
-            }
-
-            return .ok
+    func appleLoginRedirect(req: Request) async throws -> Response {
+        let signInResult = try await signInUseCase.execute(req, on: req.db)
+        
+        // TODO: Issue JWT and set cookie
+        
+        if signInResult.firstSignIn {
+            return Response(status: .found, headers: ["Location": redirectUrlNormal])
         }
-
-        print("sign in failed... prevState=\(req.session.data["state"] ?? "nil") received=\(received.state)")
-        return .badRequest
+        
+        return Response(status: .found, headers: ["Location": redirectUrlWhenFirstLogin])
     }
 }

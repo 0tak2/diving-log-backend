@@ -9,6 +9,7 @@ func routes(_ app: Application) throws {
     let articleRepository: any ArticleRepositoryProtocol = ArticleRepository()
     let magazineRepository: any MagazineRepositoryProtocol = MagazineRepository()
     let seriesRepository: any SeriesRepositoryProtocol = SeriesRepository()
+    let memberRepository: any MemberRepositoryProtocol = MemberRepository()
 
     try app.register(collection: ArticleController(
         getArticleUsecase: GetArticleUsecase(repository: articleRepository),
@@ -25,5 +26,9 @@ func routes(_ app: Application) throws {
         createSeriesUseCase: CreateSeriesUseCase(repository: seriesRepository)
     ))
 
-    try app.register(collection: AuthController())
+    try app.register(collection: AuthController(
+        redirectUrlNormal: Environment.get("LOGIN_REDIRECT_URL") ?? "/",
+        redirectUrlWhenFirstLogin: Environment.get("LOGIN_REDIRECT_URL_FIRST_LOGIN") ?? "/",
+        signInUseCase: SignInUseCase(repository: memberRepository)
+    ))
 }
