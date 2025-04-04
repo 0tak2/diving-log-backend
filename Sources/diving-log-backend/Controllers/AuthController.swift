@@ -52,7 +52,8 @@ struct AuthController: RouteCollection {
         let signInResult = try await signInUseCase.execute(req, on: req.db)
         
         let jwtPayload = DivingLogJWTPayload(
-            subject: .init(value: signInResult.member.nickname),
+            subject: .init(value: signInResult.member.id?.uuidString ?? ""),
+            nickname: signInResult.member.nickname,
             expiration: .init(value: Date.now.adding(days: accessTokenExpiresInDays)),
             level: signInResult.member.memberLevel
         )

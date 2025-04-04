@@ -11,11 +11,14 @@ import JWT
 struct DivingLogJWTPayload: JWTPayload {
     enum CodingKeys: String, CodingKey {
         case subject = "sub"
+        case nickname = "nickname"
         case expiration = "exp"
         case level = "level"
     }
 
     var subject: SubjectClaim
+    
+    var nickname: String
 
     var expiration: ExpirationClaim
 
