@@ -9,6 +9,8 @@ extension DomainError {
                 return .init(status: 500, message: self.localizedDescription, data: nil)
             case .alreadyExistError:
                 return .init(status: 400, message: self.localizedDescription, data: nil)
+            case .forbiddenError:
+                return .init(status: 403, message: self.localizedDescription, data: nil)
             case .internalError:
                 return .init(status: 500, message: self.localizedDescription, data: nil)
         }

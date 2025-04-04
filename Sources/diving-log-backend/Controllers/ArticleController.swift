@@ -2,12 +2,14 @@ import Fluent
 import Vapor
 
 struct ArticleController: RouteCollection {
-    let getArticleUsecase: BaseUseCase<Int, ArticleEntity>
+    let getArticleUsecase: BaseUseCase<GetArticleDTO, ArticleEntity?>
     let getAllArticlesInMagazineUseCase: BaseUseCase<Int, [ArticleEntity]>
     let createMagazineUseCase: BaseUseCase<CreateArticleDTO, ArticleEntity>
 
     func boot(routes: any Vapor.RoutesBuilder) throws {
-        let articles = routes.grouped("articles")
+        let articles = routes
+            .grouped(MemberAuthenticator())
+            .grouped("articles")
 
         articles.post(use: self.create)
         articles.get(use: self.getAll)
@@ -22,13 +24,20 @@ struct ArticleController: RouteCollection {
               let id = Int(idParameter) else {
                 throw ControllerError.validationError("id가 필요합니다")
         }
-
-        let articleEntity = try await getArticleUsecase.execute(id, on: req.db)
-        let responseDTO = ArticleResponseDTO.from(entity: articleEntity, includeContent: true)
-        if responseDTO == nil {
-            throw ControllerError.convertDTOFailedError("magazine DTO 변환에 실패했습니다")
+        
+        guard let user = req.auth.get(CurrentUser.self) else {
+            throw ControllerError.needLoginError
         }
-        return BasicResponse.okay(data: responseDTO)
+
+        if let articleEntity = try await getArticleUsecase.execute(GetArticleDTO(articleId: id, requestedBy: user), on: req.db) {
+            let responseDTO = ArticleResponseDTO.from(entity: articleEntity, includeContent: true)
+            if responseDTO == nil {
+                throw ControllerError.convertDTOFailedError("magazine DTO 변환에 실패했습니다")
+            }
+            return BasicResponse.okay(data: responseDTO)
+        }
+        
+        return BasicResponse.notFound()
     }
 
     func create(req: Request) async throws -> BasicResponse<ArticleEntity> {
