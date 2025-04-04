@@ -30,7 +30,12 @@ final class SignInUseCase: BaseUseCase<Request, SignInResult>, @unchecked Sendab
         
         logger.debug("sign in success... user: \(String(describing: received.userDTO))")
 
-        let idTokenPayloadRaw = received.id_token.split(separator: ".")[1] // BASE64 string
+        let idTokenChunks = received.id_token.split(separator: ".")
+        guard idTokenChunks.count >= 2 else {
+            throw DomainError.validationError("id 토큰을 파싱할 수 없습니다")
+        }
+        
+        let idTokenPayloadRaw = idTokenChunks[1] // BASE64 string
         guard let isTokenPayloadDecodedData = Data(base64Encoded: String(idTokenPayloadRaw)),
               let idTokenPayloadJsonString = String(data: isTokenPayloadDecodedData, encoding: .utf8),
               let idTokenPayloadJsonData = idTokenPayloadJsonString.data(using: .utf8) else {
@@ -52,7 +57,7 @@ final class SignInUseCase: BaseUseCase<Request, SignInResult>, @unchecked Sendab
                     appleOAuthId: appleLoginSub,
                     nickname: received.userDTO?.name.firstName ?? "N/A",
                     isDeleted: false,
-                    memberLevel: 1,
+                    memberLevel: MemberLevel.normal.rawValue,
                     createdAt: nil,
                     updatedAt: nil,
                     hasEmailVerified: false,
