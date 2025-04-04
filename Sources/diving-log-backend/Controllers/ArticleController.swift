@@ -41,6 +41,11 @@ struct ArticleController: RouteCollection {
     }
 
     func create(req: Request) async throws -> BasicResponse<ArticleEntity> {
+        guard let user = req.auth.get(CurrentUser.self),
+              user.level >= MemberLevel.admin.rawValue else {
+            throw ControllerError.forbiddenError
+        }
+        
         let dto = try req.content.decode(CreateArticleDTO.self)
         let magazine = try await createMagazineUseCase.execute(dto, on: req.db)
         return BasicResponse.okay(data: magazine)

@@ -6,7 +6,9 @@ struct MagazineController: RouteCollection {
     let getMagazineUseCase: BaseUseCase<Int, MagazineEntity>
 
     func boot(routes: any Vapor.RoutesBuilder) throws {
-        let magazines = routes.grouped("magazines")
+        let magazines = routes
+            .grouped(MemberAuthenticator())
+            .grouped("magazines")
 
         magazines.post(use: self.create)
 
@@ -16,6 +18,11 @@ struct MagazineController: RouteCollection {
     }
 
     func create(req: Request) async throws -> BasicResponse<MagazineEntity> {
+        guard let user = req.auth.get(CurrentUser.self),
+              user.level >= MemberLevel.admin.rawValue else {
+            throw ControllerError.forbiddenError
+        }
+        
         let dto = try req.content.decode(CreateMagazineDTO.self)
         let magazine = try await createMagazineUseCase.execute(dto, on: req.db)
         return BasicResponse.okay(data: magazine)
