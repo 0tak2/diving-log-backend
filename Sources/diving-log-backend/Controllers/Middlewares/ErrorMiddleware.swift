@@ -12,6 +12,9 @@ struct ErrorMiddleware: AsyncMiddleware {
             request.logger.error("responded controller error. message=\(error.errorDescription ?? "")")
             let responseDTO = error.toResponse()
             return try await responseDTO.encodeResponse(status: HTTPStatus(statusCode: responseDTO.status), for: request)
+        } catch let error as AbortError {
+            request.logger.error("abort error. message=\(error.localizedDescription)")
+            return try await BasicResponse<EmptyType>(status: Int(error.status.code), message: error.reason, data: nil).encodeResponse(for: request)
         } catch {
             request.logger.error("unexpected error. error=\(String(reflecting: error))")
             let responseDTO = BasicResponse<EmptyType>(status: 500, message: "Internal Server Error", data: nil)
