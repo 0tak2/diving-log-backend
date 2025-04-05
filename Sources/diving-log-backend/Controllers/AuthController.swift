@@ -7,22 +7,29 @@ struct AuthController: RouteCollection {
     private let redirectUrlWhenFirstLogin: String
     private let accessTokenExpiresInDays: Int
     private let signInUseCase: BaseUseCase<Request, SignInResult>
+    private let sendEmailUseCase: BaseUseCase<SendVerificationEmailInput, Void>
     
-    init(redirectUrlNormal: String, redirectUrlWhenFirstLogin: String, accessTokenExpiresInDays: Int, signInUseCase: BaseUseCase<Request, SignInResult>) {
+    init(redirectUrlNormal: String, redirectUrlWhenFirstLogin: String, accessTokenExpiresInDays: Int, signInUseCase: BaseUseCase<Request, SignInResult>, sendEmailUseCase: BaseUseCase<SendVerificationEmailInput, Void>) {
         self.redirectUrlNormal = redirectUrlNormal
         self.redirectUrlWhenFirstLogin = redirectUrlWhenFirstLogin
         self.accessTokenExpiresInDays = accessTokenExpiresInDays
         self.signInUseCase = signInUseCase
+        self.sendEmailUseCase = sendEmailUseCase
     }
     
     func boot(routes: any Vapor.RoutesBuilder) throws {
-        let auth = routes.grouped("auth")
+        let auth = routes
+            .grouped(MemberAuthenticator())
+            .grouped("auth")
 
         let signInWithAppleRoutes = auth.grouped("signInWithApple")
         signInWithAppleRoutes.get(use: self.signInWithApple)
 
         let appleLoginRedirectRoutes = auth.grouped("appleLoginRedirect")
         appleLoginRedirectRoutes.post(use: self.appleLoginRedirect)
+        
+        let sendVerificationEmail = auth.grouped("sendVerificationEmail")
+        sendVerificationEmail.post(use: self.sendVerificationEmail)
     }
 
     func signInWithApple(req: Request) async throws -> View {
@@ -70,5 +77,17 @@ struct AuthController: RouteCollection {
             sameSite: .lax
         )
         return response
+    }
+    
+    func sendVerificationEmail(req: Request) async throws -> BasicResponse<EmptyType> {
+        guard let user = req.auth.get(CurrentUser.self) else {
+            throw ControllerError.needLoginError
+        }
+        
+        let request = try req.content.decode(SendVerificationEmailRequestDTO.self)
+        
+        try await sendEmailUseCase.execute(.init(name: user.nickname, email: request.emailTo), on: req.db)
+        
+        return BasicResponse.okay(data: nil)
     }
 }

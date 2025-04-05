@@ -30,6 +30,20 @@ func routes(_ app: Application) throws {
         redirectUrlNormal: Environment.get("LOGIN_REDIRECT_URL") ?? "/",
         redirectUrlWhenFirstLogin: Environment.get("LOGIN_REDIRECT_URL_FIRST_LOGIN") ?? "/",
         accessTokenExpiresInDays: Int(Environment.get("ACCESS_TOKEN_EXPIRES_IN_DAYS") ?? "1") ?? 1,
-        signInUseCase: SignInUseCase(repository: memberRepository)
+        signInUseCase: SignInUseCase(repository: memberRepository),
+        sendEmailUseCase: SendAcademyVerificationMailUseCase(
+            allowableEmailDomain: [
+                "pos.idserve.net",
+                Environment.get("ADDITIONAL_ALLOWABLE_EMAIL_DOMAIN_1") ?? "",
+                Environment.get("ADDITIONAL_ALLOWABLE_EMAIL_DOMAIN_2") ?? "",
+                Environment.get("ADDITIONAL_ALLOWABLE_EMAIL_DOMAIN_3") ?? "",
+            ],
+            mailSender: MailGunSender(
+                mailGunApiKey: Environment.get("EMAIL_MAILGUN_API_KEY")!,
+                mailSendBy: Environment.get("EMAIL_SENDER_NAME")!,
+                mailDomain: Environment.get("EMAIL_SENDER_DOMAIN")!
+            ),
+            repository: memberRepository
+        )
     ))
 }
